@@ -21,10 +21,10 @@ spec:
       - name: kubectl
         image: {{ template "kubeapps.image" (list .Values.hooks.image .Values.global) }}
         command:
-        - /bin/sh
+        - /Windows/System32/WindowsPowerShell/v1.0/powershell.exe
         args:
-        - -c
-        - "kubectl delete secret -n {{ .Release.Namespace }} {{ .Values.mongodb.existingSecret }} || true"
+        - -command
+        - "kubectl delete secret -n {{ .Release.Namespace }} {{ .Values.mongodb.existingSecret }}; echo 0"
       restartPolicy: OnFailure
       serviceAccountName: {{ template "kubeapps.mongodb-jobs-cleanup.fullname" . }}
     {{- with .Values.hooks.nodeSelector }}

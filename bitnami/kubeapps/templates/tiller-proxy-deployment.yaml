@@ -26,6 +26,8 @@ spec:
         command:
         - /proxy
         args:
+        - --disable-auth
+        - --debug
         - --host={{ .Values.tillerProxy.host }}
         {{- if .Values.tillerProxy.tls }}
         - --tls
@@ -48,8 +50,6 @@ spec:
         - name: HELM_HOME
           value: /etc/certs
         {{- end }}
-        resources:
-{{ toYaml .Values.tillerProxy.resources | indent 12 }}
       {{- if .Values.tillerProxy.tls }}
       volumes:
       - name: tiller-certs

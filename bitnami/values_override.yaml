@@ -1,0 +1,113 @@
+
+
+frontend:
+  replicaCount: 1
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: nginx-bitnami
+    tag: latest
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 60
+    timeoutSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8080
+    initialDelaySeconds: 20
+    timeoutSeconds: 5
+
+# AppRepository Controller is the controller used to manage the repositories to
+# sync. Set apprepository.initialRepos to configure the initial set of
+# repositories to use when first installing Kubeapps.
+apprepository:
+  # Running a single controller replica to avoid sync job duplication
+  replicaCount: 1
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: apprepository-controller
+    tag: latest
+  # Image used to perform chart repository syncs
+  syncImage:
+    registry: nmaliwaregistry.duckdns.org
+    repository: chart-repo
+    tag: latest
+  # initialRepos:
+  # - name: stable
+  #   url: https://kubernetes-charts.storage.googleapis.com
+  # - name: incubator
+  #   url: https://kubernetes-charts-incubator.storage.googleapis.com
+  # - name: svc-cat
+  #   url: https://svc-catalog-charts.storage.googleapis.com
+  # - name: bitnami
+  #   url: https://charts.bitnami.com/bitnami
+  # # https://github.com/kubeapps/kubeapps/issues/478#issuecomment-422979262
+
+
+# Hooks are used to perform actions like populating apprepositories
+# or creating required resources during installation or upgrade
+hooks:
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: k8s-kubectl
+    tag: latest
+
+# Tiller Proxy is a secure REST API on top of Helm's Tiller component used to
+# manage Helm chart releases in the cluster from Kubeapps. Set tillerProxy.host
+# to configure a different Tiller host to use.
+tillerProxy:
+  replicaCount: 1
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: tiller-proxy
+    tag: latest
+  host: tiller-nodeport.kube-system.svc.cluster.local:44134    
+
+# Chartsvc is used to serve chart metadata over a REST API.
+chartsvc:
+  replicaCount: 1
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: chartsvc
+    tag: latest
+
+# Dashboard serves the compiled static React frontend application. This is an
+# internal service used by the main frontend reverse-proxy and should not be
+# accessed directly.
+dashboard:
+  replicaCount: 1
+  image:
+    registry: nmaliwaregistry.duckdns.org
+    repository: kubeapps
+    tag: latest
+
+
+testImage:
+  # Image used for the tests. The only requirement is to include curl
+  registry: docker.io
+  repository: bitnami/nginx
+  tag: 1.14.0-r27
+
+mongodb:
+  image:
+    # pullPolicy: Never
+    registry: nmaliwaregistry.duckdns.org
+    repository: mongodb
+    tag: latest
+  persistence:
+    enabled: false
+  securityContext:
+    enabled: false
+
+# chartsvc:
+#   resources: {}
+
+# chartsvc:
+#   resources:
+#     limits:
+#       cpu: null
+#       memory: null
+#     requests: {}
+
